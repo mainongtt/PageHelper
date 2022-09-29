@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="simple" targetRuntime="MyBatis3Simple">
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/mytests?characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=Hongkong"
+                        userId="root" password="root"/>
+
+        <javaModelGenerator targetPackage="com.my.entity" targetProject="src/main/java">
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mappers" targetProject="src/main/resources"/>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.my.dao" targetProject="src/main/java"/>
+
+        <table tableName="user" domainObjectName="User"
+               enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" >
+            <generatedKey column="uid" sqlStatement="MYSQL" identity="true" />
+            <columnOverride column="username" jdbcType="VARCHAR" javaType="String" />
+            <columnOverride column="password" jdbcType="VARCHAR" javaType= "String" />
+        </table>
+
+    </context>
+</generatorConfiguration>
