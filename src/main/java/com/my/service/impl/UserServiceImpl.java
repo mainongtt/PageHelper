@@ -1,7 +1,7 @@
 package com.my.service.impl;
 
 import com.my.common.UserReqDto;
-import com.my.dao.master.UserMapper;
+import com.my.dao.master.UserMapperMaster;
 import com.my.entity.User;
 import com.my.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,13 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
-    private UserMapper userMapper;
+    private UserMapperMaster userMapperMaster;
 
     @Override
     public List<User> list(UserReqDto userReqDto) {
         List<User> users = new ArrayList<>();
         try{
-            users = userMapper.selectAll();
+            users = userMapperMaster.selectAll();
         }catch (Exception e){
             log.info("错误");
         }

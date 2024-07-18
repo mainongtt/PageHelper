@@ -1,6 +1,6 @@
 package com.my.dao;
 
-import com.my.dao.master.UserMapper;
+import com.my.dao.master.UserMapperMaster;
 import com.my.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,11 +20,11 @@ import java.util.List;
 public class TestUserMapper {
 
     @Autowired
-    private UserMapper userMapper;
+    private UserMapperMaster userMapperMaster;
 
     @Test
     public void test(){
-        List<User> users = userMapper.selectAll();
+        List<User> users = userMapperMaster.selectAll();
         System.out.println(users.size());
     }
 }
