@@ -8,7 +8,7 @@ spring:
       password: root
       driver-class-name: com.mysql.cj.jdbc.Driver
     slave:
-      jdbc-url: jdbc:mysql://localhost:3306/tests
+      jdbc-url: jdbc:mysql://localhost:3306/test
       username: root
       password: root
       driver-class-name: com.mysql.cj.jdbc.Driver
