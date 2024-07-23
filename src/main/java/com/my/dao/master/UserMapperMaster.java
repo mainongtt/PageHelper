@@ -2,6 +2,7 @@ package com.my.dao.master;
 
 import com.my.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface UserMapperMaster {
     List<User> selectAll();
 
     List<User> selectByUserName(String username);
+
+    List<User> selectBetween(@Param("minValue") String minValue,@Param("maxValue") String maxValue);
 }

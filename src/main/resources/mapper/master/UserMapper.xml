@@ -31,6 +31,7 @@
     -->
     select uid, username, password
     from user
+    order by username
   </select>
 
   <select id="selectByUserName" parameterType="string" resultMap="BaseResultMap">
@@ -38,5 +39,12 @@
     select uid, username, password
     from user
     where username = #{username}
+  </select>
+
+  <select id="selectBetween" resultMap="BaseResultMap">
+    select uid, username, password
+    from user
+    where username between #{minValue} and #{maxValue}
+    order by username
   </select>
 </mapper>

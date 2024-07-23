@@ -39,10 +39,10 @@ public class PageUtil {
     }
 
     // 二次查询法
-    public static <T> HashMap<String, List<T>> multiPageInfoMap(ArrayList<Supplier<List<T>>> supplierList, int pageNo, int pageSize, Comparator<T> comparator) throws Exception {
+        public static <T> HashMap<String, List<T>> multiPageInfoMap(ArrayList<Supplier<List<T>>> supplierList, int pageNo, int pageSize, Comparator<T> comparator) throws Exception {
         int offset = (pageNo - 1) * pageSize;
         int n = supplierList.size();
-        int offsetSplit = offset / n;
+        int offsetSplit = offset;
         List<T> maxValue = new ArrayList<>();
         List<T> minValue = new ArrayList<>();
         Optional<T> totalMin = supplierList.stream().map(supplier -> {
@@ -69,9 +69,8 @@ public class PageUtil {
         int totalCount = supplierList.stream()
                 .mapToInt(supplier -> supplier.get().size()) // 获取每个Supplier提供的列表并转换为int
                 .sum();
-        int offset = ((pageNo - 1) * pageSize) / n * n - (totalCount - n);
+        int offset = ((pageNo - 1) * pageSize) / n * n - (totalCount - n * pageSize);
         List<T> resAllList = supplierList.stream().map(supplier -> {
-            PageHelper.startPage(pageNo, pageSize, true);
             return supplier.get();
         }).flatMap(List::stream).collect(Collectors.toList());
         List<T> resList = resAllList.stream().sorted(comparator).skip((pageNo - 1) * pageSize - offset)

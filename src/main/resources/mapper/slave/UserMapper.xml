@@ -40,4 +40,11 @@
     from user
     where username = #{username}
   </select>
+
+  <select id="selectBetween" resultMap="BaseResultMap">
+    select uid, username, password
+    from user
+    where username between #{minValue} and #{maxValue}
+    order by username
+  </select>
 </mapper>

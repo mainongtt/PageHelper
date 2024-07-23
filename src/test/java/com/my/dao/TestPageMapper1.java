@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class TestPageMapper {
+public class TestPageMapper1 {
 
     @Autowired
     private UserMapperMaster userMapperMaster;
@@ -35,7 +35,7 @@ public class TestPageMapper {
         PageInfo<User> pageInfo = PageUtil.multiPageInfo1(supplierList, 0, 2, new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
-                return o1.getUsername().compareTo(o2.getUsername());
+               return o1.getUsername().compareTo(o2.getUsername());
             }
         });
         List<User> list = pageInfo.getList();
