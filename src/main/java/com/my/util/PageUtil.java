@@ -3,9 +3,14 @@ package com.my.util;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.my.entity.MultiPageInfo;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -20,10 +25,10 @@ public class PageUtil {
             throw new Exception("异常");
         }
         List<T> resAllList = supplierList.stream().map(supplier -> {
-            PageHelper.startPage(pageNo, pageSize, true);
+            PageHelper.startPage(1, pageNo * pageSize, true);
             return supplier.get();
         }).flatMap(List::stream).collect(Collectors.toList());
-        List<T> resList = resAllList.stream().sorted(comparator).
+        List<T> resList = resAllList.stream().sorted(comparator).skip((pageNo - 1) * pageSize).
                 limit(pageSize).collect(Collectors.toList());
         return getPageInfo(pageNo, pageSize, resAllList.size(), resList);
     }
@@ -39,15 +44,18 @@ public class PageUtil {
     }
 
     // 二次查询法
-        public static <T> HashMap<String, List<T>> multiPageInfoMap(ArrayList<Supplier<List<T>>> supplierList, int pageNo, int pageSize, Comparator<T> comparator) throws Exception {
+    public static <T> MultiPageInfo multiPageInfoMap(ArrayList<Supplier<List<T>>> supplierList, int pageNo, int pageSize, Comparator<T> comparator) throws Exception {
+        MultiPageInfo<T> multiPageInfo = new MultiPageInfo<T>();
         int offset = (pageNo - 1) * pageSize;
         int n = supplierList.size();
-        int offsetSplit = offset;
+        int offsetSplit = offset / n;
         List<T> maxValue = new ArrayList<>();
         List<T> minValue = new ArrayList<>();
+        AtomicInteger sum = new AtomicInteger();
         Optional<T> totalMin = supplierList.stream().map(supplier -> {
             PageHelper.offsetPage(offsetSplit, pageSize, true);
             List<T> tempList = supplier.get();
+            sum.addAndGet(tempList.size());
             Optional<T> max = tempList.stream().max(comparator);
             if (max.isPresent()) {
                 maxValue.add(max.get());
@@ -58,18 +66,19 @@ public class PageUtil {
         if (totalMin.isPresent()) {
             minValue.add(totalMin.get());
         }
-        HashMap<String, List<T>> resultMap = new HashMap<>();
-        resultMap.put("maxValue",maxValue);
-        resultMap.put("minValue",minValue);
-        return resultMap;
+        multiPageInfo.setMaxValues(maxValue);
+        multiPageInfo.setMinValues(minValue);
+        multiPageInfo.setTotalCount(sum.intValue());
+        return multiPageInfo;
     }
 
-    public static <T>  PageInfo<T> multiPageInfo2(ArrayList<Supplier<List<T>>> supplierList, int pageNo, int pageSize, Comparator<T> comparator) throws Exception {
+    public static <T> PageInfo<T> multiPageInfo2(int total, ArrayList<Supplier<List<T>>> supplierList, int pageNo, int pageSize, Comparator<T> comparator) throws Exception {
         int n = supplierList.size();
         int totalCount = supplierList.stream()
                 .mapToInt(supplier -> supplier.get().size()) // 获取每个Supplier提供的列表并转换为int
                 .sum();
-        int offset = ((pageNo - 1) * pageSize) / n * n - (totalCount - n * pageSize);
+        int offset = ((pageNo - 1) * pageSize) / n * n - (totalCount - total);
+        offset = Math.max(offset, 0);
         List<T> resAllList = supplierList.stream().map(supplier -> {
             return supplier.get();
         }).flatMap(List::stream).collect(Collectors.toList());

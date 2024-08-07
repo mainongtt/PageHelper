@@ -3,6 +3,7 @@ package com.my.dao;
 import com.github.pagehelper.PageInfo;
 import com.my.dao.master.UserMapperMaster;
 import com.my.dao.slaver.UserMapperSlaver;
+import com.my.entity.MultiPageInfo;
 import com.my.entity.User;
 import com.my.util.PageUtil;
 import org.junit.Test;
@@ -11,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -33,13 +31,13 @@ public class TestPageMapper2 {
 
     @Test
     public void test() throws Exception {
-        int pageNo = 1;
-        int pageSize = 7;
+        int pageNo = 2;
+        int pageSize = 5;
         ArrayList<Supplier<List<User>>> supplierList1 = new ArrayList<>();
         supplierList1.add(() -> userMapperMaster.selectAll());
         supplierList1.add(() -> userMapperSlaver.selectAll());
 
-        HashMap<String, List<User>> multiPageInfoMap = PageUtil.multiPageInfoMap(supplierList1, pageNo, pageSize, new Comparator<User>() {
+        MultiPageInfo multiPageInfo = PageUtil.multiPageInfoMap(supplierList1, pageNo, pageSize, new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
                 int username1 = Integer.parseInt(o1.getUsername());
@@ -47,13 +45,16 @@ public class TestPageMapper2 {
                 return username1 - username2;
             }
         });
-        List<User> maxValue = multiPageInfoMap.get("maxValue");
-        List<User> minValue = multiPageInfoMap.get("minValue");
-
+        List<User> maxValue = multiPageInfo.getMaxValues();
+        List<User> minValue = multiPageInfo.getMinValues();
+        int totalCount = multiPageInfo.getTotalCount();
+        if(maxValue.size() == 0 || minValue.size() == 0){
+            return;
+        }
         ArrayList<Supplier<List<User>>> supplierList2 = new ArrayList<>();
         supplierList2.add(() -> userMapperMaster.selectBetween(minValue.get(0).getUsername(), maxValue.get(0).getUsername()));
         supplierList2.add(() -> userMapperSlaver.selectBetween(minValue.get(0).getUsername(), maxValue.get(1).getUsername()));
-        PageInfo<User> pageInfo = PageUtil.multiPageInfo2(supplierList2, pageNo, pageSize, new Comparator<User>() {
+        PageInfo<User> pageInfo = PageUtil.multiPageInfo2(totalCount, supplierList2, pageNo, pageSize, new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
                 return o1.getUsername().compareTo(o2.getUsername());

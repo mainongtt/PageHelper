@@ -32,7 +32,7 @@ public class TestPageMapper1 {
         ArrayList<Supplier<List<User>>> supplierList = new ArrayList<>();
         supplierList.add(() -> userMapperMaster.selectAll());
         supplierList.add(() -> userMapperSlaver.selectAll());
-        PageInfo<User> pageInfo = PageUtil.multiPageInfo1(supplierList, 0, 2, new Comparator<User>() {
+        PageInfo<User> pageInfo = PageUtil.multiPageInfo1(supplierList, 2, 5, new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
                return o1.getUsername().compareTo(o2.getUsername());
